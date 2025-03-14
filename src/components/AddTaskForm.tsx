@@ -25,9 +25,11 @@ import {
   ChevronDown,
   Hash,
   Inbox,
+  Save,
   SendHorizonal,
   X,
 } from "lucide-react";
+import * as chrono from "chrono-node";
 
 // Type imports
 import type { ClassValue } from "clsx";
@@ -47,12 +49,12 @@ type TaskFormProps = {
 const DEFAULT_FORM_DATA: TaskForm = {
   content: "",
   due_date: null,
-  taskId: null,
+  projectId: null,
 };
 
 function AddTaskForm({
-  defaultFormData = DEFAULT_FORM_DATA,
   mode,
+  defaultFormData = DEFAULT_FORM_DATA,
   onCancel,
   onSubmit,
   className,
@@ -60,7 +62,7 @@ function AddTaskForm({
   const [formData, setFormData] = useState(defaultFormData);
   const [taskContent, setTaskContent] = useState(defaultFormData.content);
   const [dueDate, setDueDate] = useState(defaultFormData.due_date);
-  const [taskId, setTaskId] = useState(defaultFormData.taskId);
+  const [projectId, setProjectId] = useState(defaultFormData.projectId);
 
   const [projectName, setProjectName] = useState("");
   const [projectColorHex, setProjectColorHex] = useState("");
@@ -74,14 +76,22 @@ function AddTaskForm({
       ...prevState,
       content: taskContent.trim(),
       due_date: dueDate,
-      taskId: taskId,
+      projectId,
     }));
-  }, [taskContent, dueDate, taskId]);
+  }, [taskContent, dueDate, projectId]);
+
+  // Set due date from chrono parsed task content
+  useEffect(() => {
+    const chronoParsingResult = chrono.parse(taskContent.trim());
+
+    if (chronoParsingResult.length) {
+      const latestDate = chronoParsingResult[chronoParsingResult.length - 1];
+      setDueDate(latestDate?.date());
+    }
+  }, [taskContent]);
 
   const handleSubmit = useCallback(() => {
     if (!taskContent.trim()) return;
-
-    console.log(formData);
 
     if (onSubmit) onSubmit(formData);
 
@@ -161,7 +171,7 @@ function AddTaskForm({
               variant="ghost"
               size="sm"
               role="combobox"
-              aria-expanded="false"
+              aria-expanded={isComboBoxOpen}
               className="max-w-max"
             >
               <Inbox /> Inbox <ChevronDown />
@@ -215,13 +225,19 @@ function AddTaskForm({
             type="button"
             disabled={!taskContent.trim()}
             onClick={handleSubmit}
-            aria-label="Add task"
+            aria-label={mode === "create" ? "Add task" : "Save changes"}
             className="capitalize disabled:cursor-not-allowed"
           >
             <span className="hidden md:inline">
               {mode === "create" ? "Add task" : "Save"}
             </span>
-            <SendHorizonal className="md:hidden" />
+            <>
+              {mode === "create" ? (
+                <SendHorizonal className="md:hidden" />
+              ) : (
+                <Save className="md:hidden" />
+              )}
+            </>
           </Button>
         </div>
       </CardFooter>

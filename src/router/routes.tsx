@@ -13,6 +13,9 @@ import AuthSyncPage from "@/pages/AuthSyncPage";
 import AppLayout from "@/layouts/AppLayout";
 import InboxPage from "@/pages/InboxPage";
 
+// Action imports
+import appAction from "./actions/appAction";
+
 const rootRouteChildren: RouteObject[] = [
   {
     index: true,
@@ -49,6 +52,7 @@ const router = createBrowserRouter([
   {
     path: "/app",
     element: <AppLayout />,
+    action: appAction,
     children: appRouteChildren,
   },
 ]);

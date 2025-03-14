@@ -10,6 +10,7 @@ import {
   isTomorrow,
   startOfToday,
 } from "date-fns";
+import { redirect } from "react-router";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -77,4 +78,20 @@ export function getDueDateTextColor(
   } else if (isTomorrow(dueDate) && !completed) {
     return "text-amber-500";
   }
+}
+
+/**
+ * Redirects the user to the "auth-sync" page if the user id is not found in the local storage
+ * or returns the user id
+ */
+export function getUserIdFromLocalStorage(): string {
+  const userId = localStorage.getItem("clerkUserId");
+
+  if (!userId) {
+    redirect("/auth-sync");
+
+    return "";
+  }
+
+  return userId;
 }
