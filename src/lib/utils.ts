@@ -81,16 +81,18 @@ export function getDueDateTextColor(
 }
 
 /**
- * Redirects the user to the "auth-sync" page if the user id is not found in the local storage
- * or returns the user id
+ * Retrieves the Clerk user ID from local storage.
+ *
+ * - If a user ID is found, it returns the retrieved value.
+ * - If no user ID is found, it redirects the user to the "/auth-sync" page.
+ *
+ * @returns {string | Response} The user ID if found, otherwise a redirect response.
  */
-export function getUserIdFromLocalStorage(): string {
+export function getClerkUserId(): string | Response {
   const userId = localStorage.getItem("clerkUserId");
 
   if (!userId) {
-    redirect("/auth-sync");
-
-    return "";
+    return redirect("/auth-sync");
   }
 
   return userId;

@@ -33,23 +33,23 @@ import * as chrono from "chrono-node";
 
 // Type imports
 import type { ClassValue } from "clsx";
-import type { TaskForm } from "@/types/types";
+import type { TaskFormData } from "@/types/types";
 
 // Util import
 import { cn, getFormattedDateLabel, getDueDateTextColor } from "@/lib/utils";
 
 type TaskFormProps = {
-  defaultFormData?: TaskForm;
   mode: "create" | "edit";
-  onCancel: () => void;
-  onSubmit?: (formData: TaskForm) => void;
+  defaultFormData?: TaskFormData;
+  onCancel?: () => void;
+  onSubmit?: (formData: TaskFormData) => void;
   className?: ClassValue;
 };
 
-const DEFAULT_FORM_DATA: TaskForm = {
+const DEFAULT_FORM_DATA: TaskFormData = {
   content: "",
   due_date: null,
-  projectId: null,
+  project: null,
 };
 
 function AddTaskForm({
@@ -62,11 +62,9 @@ function AddTaskForm({
   const [formData, setFormData] = useState(defaultFormData);
   const [taskContent, setTaskContent] = useState(defaultFormData.content);
   const [dueDate, setDueDate] = useState(defaultFormData.due_date);
-  const [projectId, setProjectId] = useState(defaultFormData.projectId);
-
+  const [project, setProject] = useState(defaultFormData.project);
   const [projectName, setProjectName] = useState("");
   const [projectColorHex, setProjectColorHex] = useState("");
-
   const [isCalendarOpen, setIsCalendarOpen] = useState(false);
   const [isComboBoxOpen, setIsComboBoxOpen] = useState(false);
 
@@ -76,11 +74,11 @@ function AddTaskForm({
       ...prevState,
       content: taskContent.trim(),
       due_date: dueDate,
-      projectId,
+      project,
     }));
-  }, [taskContent, dueDate, projectId]);
+  }, [taskContent, dueDate, project]);
 
-  // Set due date from chrono parsed task content
+  // Set due date from Chrono parsed task content
   useEffect(() => {
     const chronoParsingResult = chrono.parse(taskContent.trim());
 
@@ -90,6 +88,7 @@ function AddTaskForm({
     }
   }, [taskContent]);
 
+  // Handle "add task" or "save changes"
   const handleSubmit = useCallback(() => {
     if (!taskContent.trim()) return;
 
@@ -99,12 +98,18 @@ function AddTaskForm({
   }, [taskContent, onSubmit, formData]);
 
   return (
-    <Card className="focus-within:border-foreground/30">
+    <Card className={cn("focus-within:border-foreground/30", className)}>
       <CardContent className="p-2">
         <Textarea
           autoFocus
           value={taskContent}
           onChange={(event) => setTaskContent(event.currentTarget.value)}
+          onKeyDown={(event) => {
+            if (event.key === "Enter") {
+              event.preventDefault();
+              handleSubmit();
+            }
+          }}
           placeholder="Complete your task and reward yourself with a well-deserved tour!"
           className="!border-0 p-1 mb-2 !ring-0"
         />

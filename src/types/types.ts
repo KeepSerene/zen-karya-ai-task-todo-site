@@ -1,8 +1,8 @@
 type Project = {
-  userId: string | null;
   name: string;
   color_name: string;
   color_hex: string;
+  userId: string | null;
 };
 
 type ProjectForm = {
@@ -19,16 +19,16 @@ type Task = {
   content: string;
   due_date: Date | null;
   completed?: boolean;
-  task: Project | null;
+  project: Project | null;
   userId: string;
 };
 
-type TaskForm = {
+type TaskFormData = {
   id?: string;
   content: string;
   due_date: Date | null;
   completed?: boolean;
-  projectId: string | null;
+  project: string | null;
 };
 
-export type { Project, ProjectForm, Task, TaskForm };
+export type { Project, ProjectForm, Task, TaskFormData };

@@ -1,11 +1,11 @@
 // Component imports
-import PageTitle from "@/components/PageTitle";
+import PageMetaTitle from "@/components/PageMetaTitle";
 import { SignUp } from "@clerk/clerk-react";
 
 function RegisterPage() {
   return (
     <>
-      <PageTitle title="Create an account | ZenKaryaX" />
+      <PageMetaTitle title="Create an account | ZenKaryaX" />
 
       <section>
         <div className="wrapper flex justify-center">

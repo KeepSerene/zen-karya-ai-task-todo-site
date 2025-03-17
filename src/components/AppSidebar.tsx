@@ -44,8 +44,11 @@ function AppSidebar() {
               {/* Add task button */}
               <SidebarMenuItem>
                 <AddTaskFormDialog>
-                  <SidebarMenuButton type="button" className="!text-primary">
-                    <CirclePlus /> Add Task
+                  <SidebarMenuButton
+                    type="button"
+                    className="!text-primary capitalize"
+                  >
+                    <CirclePlus /> Add task
                   </SidebarMenuButton>
                 </AddTaskFormDialog>
               </SidebarMenuItem>
@@ -97,7 +100,7 @@ function AppSidebar() {
                 <SidebarMenu>
                   <SidebarMenuItem>
                     <p className="text-muted-foreground text-sm p-2">
-                      Click + to add a project
+                      Click + to add a new project
                     </p>
                   </SidebarMenuItem>
                 </SidebarMenu>

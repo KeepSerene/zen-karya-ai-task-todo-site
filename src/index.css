@@ -93,12 +93,3 @@
     @apply px-4 mx-auto;
   }
 }
-
-@layer base {
-  * {
-    @apply border-border;
-  }
-  body {
-    @apply bg-background text-foreground;
-  }
-}

@@ -1,5 +1,5 @@
 // Component imports
-import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
+import { SidebarProvider } from "@/components/ui/sidebar";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import AppSidebar from "@/components/AppSidebar";
 
@@ -12,11 +12,9 @@ function AppLayout() {
       <TooltipProvider delayDuration={500} disableHoverableContent>
         <AppSidebar />
 
-        <SidebarTrigger type="button" />
-
-        <p>AppLayout</p>
-
-        <Outlet />
+        <main className="flex-1">
+          <Outlet />
+        </main>
       </TooltipProvider>
     </SidebarProvider>
   );

@@ -1,5 +1,5 @@
 // Component imports
-import PageTitle from "@/components/PageTitle";
+import PageMetaTitle from "@/components/PageMetaTitle";
 import { Button } from "@/components/ui/button";
 
 // Library import
@@ -11,7 +11,7 @@ import { heroBannerLg, heroBannerSm } from "@/assets/assets";
 function HomePage() {
   return (
     <>
-      <PageTitle title="ZenKaryaX – AI-Powered Task & Project Management Reinvented" />
+      <PageMetaTitle title="ZenKaryaX – AI-Powered Task & Project Management Reinvented" />
 
       <div className="px-8 mx-auto grid grid-cols-1 lg:grid-cols-[1fr_1.5fr] items-center gap-8 xl:gap-12">
         <section className="text-center lg:text-left flex flex-col items-center lg:items-start gap-4 lg:gap-6">

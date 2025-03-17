@@ -16,6 +16,9 @@ import InboxPage from "@/pages/InboxPage";
 // Action imports
 import appAction from "./actions/appAction";
 
+// Loader imports
+import inboxLoader from "./loaders/inboxLoader";
+
 const rootRouteChildren: RouteObject[] = [
   {
     index: true,
@@ -39,6 +42,7 @@ const appRouteChildren: RouteObject[] = [
   {
     path: "inbox",
     element: <InboxPage />,
+    loader: inboxLoader,
   },
 ];
 

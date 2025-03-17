@@ -1,5 +1,5 @@
-// React import
-import { useState } from "react";
+// React imports
+import { useEffect, useState } from "react";
 
 // Component imports
 import {
@@ -17,6 +17,29 @@ import { startOfToday } from "date-fns";
 
 function AddTaskFormDialog({ children }: { children: React.ReactNode }) {
   const [isOpen, setIsOpen] = useState(false);
+
+  // Handle the 'q' key press
+  useEffect(() => {
+    const handler = (event: KeyboardEvent) => {
+      if (event.key === "q") {
+        // Get the element that currently has focus
+        const targetEl = event.target as HTMLElement;
+
+        if (targetEl.localName === "textarea") return;
+
+        // If applicable
+        event.preventDefault();
+        // Open the "Add Task" dialog
+        setIsOpen(true);
+      }
+    };
+
+    document.addEventListener("keydown", handler);
+
+    return () => {
+      document.removeEventListener("keydown", handler);
+    };
+  }, []);
 
   const location = useLocation();
   const fetcher = useFetcher();
@@ -38,7 +61,7 @@ function AddTaskFormDialog({ children }: { children: React.ReactNode }) {
             content: "",
             due_date:
               location.pathname === "/app/today" ? startOfToday() : null,
-            projectId: null,
+            project: null,
           }}
           onCancel={() => setIsOpen(false)}
           onSubmit={(formData) => {

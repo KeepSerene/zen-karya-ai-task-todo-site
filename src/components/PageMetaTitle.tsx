@@ -1,6 +1,6 @@
 import { Helmet } from "react-helmet";
 
-function PageTitle({ title }: { title: string }) {
+function PageMetaTitle({ title }: { title: string }) {
   return (
     <Helmet>
       <title>{title}</title>
@@ -8,4 +8,4 @@ function PageTitle({ title }: { title: string }) {
   );
 }
 
-export default PageTitle;
+export default PageMetaTitle;
