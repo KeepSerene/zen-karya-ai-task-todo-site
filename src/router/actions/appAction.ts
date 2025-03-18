@@ -65,6 +65,31 @@ const updateTask = async (data: Task) => {
   }
 };
 
+const deleteTask = async (data: Task) => {
+  const docId = data.id; // Task ID
+
+  if (!docId) {
+    throw new Error("Missing task ID");
+  }
+
+  try {
+    await databases.deleteDocument(
+      import.meta.env.VITE_APPWRITE_DATABASE_ID,
+      import.meta.env.VITE_APPWRITE_TASKS_COLLECTION_ID,
+      docId
+    );
+  } catch (err) {
+    const errMsg =
+      err instanceof Error ? err.message : "Unknown error deleting task!";
+    console.error("Error deleting task:", errMsg);
+
+    return new Response(JSON.stringify({ error: errMsg }), {
+      status: 400,
+      headers: { "Content-Type": "application/json" },
+    });
+  }
+};
+
 const appAction: ActionFunction = async ({ request }) => {
   try {
     const formData: Task = await request.json();
@@ -73,6 +98,8 @@ const appAction: ActionFunction = async ({ request }) => {
       return await createTask(formData);
     } else if (request.method === "PUT") {
       return await updateTask(formData);
+    } else if (request.method === "DELETE") {
+      return await deleteTask(formData);
     }
   } catch (err) {
     console.error("Failed to process the request:", err);

@@ -9,6 +9,7 @@ import { Loader2 } from "lucide-react";
 // Asset import
 import { logo } from "@/assets/assets";
 
+// Layout for the path: /
 function RootLayout() {
   const navigation = useNavigation();
 

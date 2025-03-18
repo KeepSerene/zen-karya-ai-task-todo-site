@@ -97,3 +97,14 @@ export function getClerkUserId(): string | Response {
 
   return userId;
 }
+
+/**
+ * Truncates a string to the specified maximum length and appends "..." if truncated.
+ *
+ * @param {string} text - The string to be truncated.
+ * @param {number} maxLength - The maximum allowed length before truncation.
+ * @returns {string} - The truncated string with "..." if it exceeds maxLength, otherwise the original string.
+ */
+export function truncateText(text: string, maxLength: number): string {
+  return text.length > maxLength ? text.slice(0, maxLength) + "..." : text;
+}

@@ -9,14 +9,34 @@ import type { Project, Task } from "@/types/types";
 import { Button } from "./ui/button";
 import { Card, CardContent, CardFooter } from "./ui/card";
 import { Tooltip, TooltipContent, TooltipTrigger } from "./ui/tooltip";
+import { ToastAction } from "./ui/toast";
 import AddTaskForm from "./AddTaskForm";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "./ui/alert-dialog";
 
 // Utility imports
-import { cn, getDueDateTextColor, getFormattedDateLabel } from "@/lib/utils";
+import {
+  cn,
+  getDueDateTextColor,
+  getFormattedDateLabel,
+  truncateText,
+} from "@/lib/utils";
 
 // Library imports
 import { CalendarDays, Check, Edit, Hash, Inbox, Trash2 } from "lucide-react";
-import { useFetcher } from "react-router";
+import { useFetcher, useLocation } from "react-router";
+
+// Custom hook import
+import { useToast } from "@/hooks/use-toast";
 
 type TaskCardProps = {
   id: string;
@@ -30,6 +50,7 @@ function TaskCard({ id, content, dueDate, completed, project }: TaskCardProps) {
   const [shouldShowAddTaskForm, setShouldShowAddTaskForm] = useState(false);
 
   const fetcher = useFetcher();
+  const location = useLocation();
 
   /*
     Capture the server response after mutations (edits/updates)
@@ -49,6 +70,8 @@ function TaskCard({ id, content, dueDate, completed, project }: TaskCardProps) {
     },
     updatedServerTask
   );
+
+  const { toast } = useToast();
 
   const handleTaskCompletion = useCallback(
     async (completed: boolean) => {
@@ -91,6 +114,23 @@ function TaskCard({ id, content, dueDate, completed, project }: TaskCardProps) {
             size="icon"
             onClick={async () => {
               await handleTaskCompletion(!task.completed);
+
+              toast({
+                title: !task.completed
+                  ? "Yay! You completed a task."
+                  : "Undone!", // Since we call "handleTaskCompletion" before setting up the toast, the message should be set in reverse order
+                action: (
+                  <ToastAction
+                    type="button"
+                    altText="Undo"
+                    onClick={async () => {
+                      await handleTaskCompletion(false);
+                    }}
+                  >
+                    Undo
+                  </ToastAction>
+                ),
+              });
             }}
             role="checkbox"
             aria-checked={task.completed}
@@ -128,7 +168,7 @@ function TaskCard({ id, content, dueDate, completed, project }: TaskCardProps) {
 
             <CardFooter className="p-0 flex gap-4">
               <>
-                {task.due_date && (
+                {task.due_date && location.pathname !== "/app/today" && (
                   <div
                     className={cn(
                       "text-muted-foreground text-xs flex items-center gap-1",
@@ -142,19 +182,24 @@ function TaskCard({ id, content, dueDate, completed, project }: TaskCardProps) {
                 )}
               </>
 
-              <div className="text-muted-foreground text-xs ml-auto grid grid-cols-[minmax(0,11.25rem),max-content] items-center gap-1">
-                <div className="justify-self-end truncate">
-                  {task.project?.name || "Inbox"}
-                </div>
+              <>
+                {location.pathname !== "/app/inbox" &&
+                  location.pathname !== `/app/projects/${project?.$id}` && (
+                    <div className="text-muted-foreground text-xs ml-auto grid grid-cols-[minmax(0,11.25rem),max-content] items-center gap-1">
+                      <span className="justify-self-end truncate">
+                        {task.project?.name || "Inbox"}
+                      </span>
 
-                <>
-                  {task.project ? (
-                    <Hash size={14} />
-                  ) : (
-                    <Inbox size={14} className="text-muted-foreground" />
+                      <>
+                        {task.project ? (
+                          <Hash size={14} />
+                        ) : (
+                          <Inbox size={14} className="text-muted-foreground" />
+                        )}
+                      </>
+                    </div>
                   )}
-                </>
-              </div>
+              </>
             </CardFooter>
           </Card>
 
@@ -179,21 +224,58 @@ function TaskCard({ id, content, dueDate, completed, project }: TaskCardProps) {
               </Tooltip>
             )}
 
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="icon"
-                  aria-label="Delete task"
-                  className="size-6 text-muted-foreground"
-                >
-                  <Trash2 />
-                </Button>
-              </TooltipTrigger>
+            <AlertDialog>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <AlertDialogTrigger asChild>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="icon"
+                      aria-label="Delete task"
+                      className="size-6 text-muted-foreground"
+                    >
+                      <Trash2 />
+                    </Button>
+                  </AlertDialogTrigger>
+                </TooltipTrigger>
 
-              <TooltipContent>Delete task</TooltipContent>
-            </Tooltip>
+                <TooltipContent>Delete task</TooltipContent>
+              </Tooltip>
+
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle className="capitalize">
+                    Delete task
+                  </AlertDialogTitle>
+                </AlertDialogHeader>
+
+                <AlertDialogDescription>
+                  Are you sure you want to delete the task:{" "}
+                  <strong>"{truncateText(task.content, 49)}"</strong>? This
+                  action <strong>cannot</strong> be undone, and all associated
+                  data will be permanently removed.
+                </AlertDialogDescription>
+
+                {/* Action buttons */}
+                <AlertDialogFooter>
+                  <AlertDialogCancel type="button">Cancel</AlertDialogCancel>
+
+                  <AlertDialogAction
+                    type="button"
+                    onClick={() => {
+                      fetcher.submit(JSON.stringify({ id: task.id }), {
+                        method: "DELETE",
+                        encType: "application/json",
+                        action: "/app",
+                      });
+                    }}
+                  >
+                    Delete
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
           </div>
         </div>
       )}
