@@ -19,7 +19,7 @@ export const SOCIAL_LINKS = [
   },
 ] as const;
 
-export const SIDEBAR_LINKS = [
+export const SIDEBAR_MENU_ITEMS = [
   {
     href: "/app/inbox",
     label: "Inbox",

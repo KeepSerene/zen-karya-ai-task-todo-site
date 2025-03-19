@@ -13,10 +13,10 @@ import { dark } from "@clerk/themes";
 // Router import
 import router from "./router/routes";
 
-const PUBLISHABLE_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY;
-const SIGN_IN_FORCE_REDIRECT_URL = import.meta.env
+const PUBLISHABLE_KEY: string = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY;
+const SIGN_IN_FORCE_REDIRECT_URL: string = import.meta.env
   .VITE_CLERK_SIGN_IN_FORCE_REDIRECT_URL;
-const SIGN_UP_FORCE_REDIRECT_URL = import.meta.env
+const SIGN_UP_FORCE_REDIRECT_URL: string = import.meta.env
   .VITE_CLERK_SIGN_UP_FORCE_REDIRECT_URL;
 
 if (!PUBLISHABLE_KEY) {

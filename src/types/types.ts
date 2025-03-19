@@ -1,17 +1,17 @@
 type Project = {
-  name: string;
-  color_name: string;
-  color_hex: string;
-  userId: string | null;
-};
-
-type ProjectForm = {
   id: string | null;
   name: string;
   color_name: string;
   color_hex: string;
-  ai_project_gen: boolean;
-  project_gen_prompt: string;
+};
+
+type ProjectFormData = {
+  id: string | null;
+  name: string;
+  color_name: string;
+  color_hex: string;
+  ai_generated: boolean;
+  generation_prompt: string;
 };
 
 type Task = {
@@ -31,4 +31,4 @@ type TaskFormData = {
   project: string | null;
 };
 
-export type { Project, ProjectForm, Task, TaskFormData };
+export type { Project, ProjectFormData, Task, TaskFormData };

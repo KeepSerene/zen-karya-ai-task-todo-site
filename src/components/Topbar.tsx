@@ -57,7 +57,7 @@ function Topbar({ tabName, taskCount }: TopbarProps) {
             : "translate-y-5 opacity-0"
         )}
       >
-        <h2 className="font-semibold truncate">{tabName}</h2>
+        <h2 className="font-semibold capitalize truncate">{tabName}</h2>
 
         {Boolean(taskCount) && (
           <p className="text-muted-foreground text-xs">{taskCount} tasks</p>

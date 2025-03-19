@@ -3,7 +3,7 @@ import { useCallback, useState } from "react";
 
 // Type imports
 import type { Models } from "appwrite";
-import type { Project, Task } from "@/types/types";
+import type { Task } from "@/types/types";
 
 // Component imports
 import { Button } from "./ui/button";
@@ -43,7 +43,7 @@ type TaskCardProps = {
   content: string;
   dueDate: Date | null;
   completed: boolean | undefined;
-  project: (Models.Document & Project) | null;
+  project: Models.Document | null;
 };
 
 function TaskCard({ id, content, dueDate, completed, project }: TaskCardProps) {
@@ -74,12 +74,15 @@ function TaskCard({ id, content, dueDate, completed, project }: TaskCardProps) {
   const { toast } = useToast();
 
   const handleTaskCompletion = useCallback(
-    async (completed: boolean) => {
-      return await fetcher.submit(JSON.stringify({ id: task.id, completed }), {
-        method: "PUT",
-        encType: "application/json",
-        action: "/app",
-      });
+    async (isCompleted: boolean) => {
+      return await fetcher.submit(
+        JSON.stringify({ id: task.id, completed: isCompleted }),
+        {
+          method: "PUT",
+          encType: "application/json",
+          action: "/app",
+        }
+      );
     },
     [task.id, task.completed]
   );
@@ -113,18 +116,22 @@ function TaskCard({ id, content, dueDate, completed, project }: TaskCardProps) {
             variant="outline"
             size="icon"
             onClick={async () => {
-              await handleTaskCompletion(!task.completed);
+              // Store the new completion state before making the update
+              // This ensures that the "Undo" button correctly reverts to the previous state
+              const newCompletionState = !task.completed; // false -> true
+
+              await handleTaskCompletion(newCompletionState);
 
               toast({
-                title: !task.completed
+                title: newCompletionState
                   ? "Yay! You completed a task."
-                  : "Undone!", // Since we call "handleTaskCompletion" before setting up the toast, the message should be set in reverse order
+                  : "Task marked as incomplete.",
                 action: (
                   <ToastAction
                     type="button"
                     altText="Undo"
                     onClick={async () => {
-                      await handleTaskCompletion(false);
+                      await handleTaskCompletion(!newCompletionState);
                     }}
                   >
                     Undo
@@ -257,7 +264,7 @@ function TaskCard({ id, content, dueDate, completed, project }: TaskCardProps) {
                   data will be permanently removed.
                 </AlertDialogDescription>
 
-                {/* Action buttons */}
+                {/* Alert dialog action buttons */}
                 <AlertDialogFooter>
                   <AlertDialogCancel type="button">Cancel</AlertDialogCancel>
 

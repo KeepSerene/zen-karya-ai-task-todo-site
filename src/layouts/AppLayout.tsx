@@ -4,18 +4,27 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { Toaster } from "@/components/ui/toaster";
 import AppSidebar from "@/components/AppSidebar";
 
-// Library import
-import { Outlet } from "react-router";
+// Library imports
+import { Outlet, useNavigation } from "react-router";
+import { cn } from "@/lib/utils";
 
 // Layout for paths starting with: /app
 function AppLayout() {
+  const navigation = useNavigation();
+  const isLoading = navigation.state === "loading" && !navigation.formData;
+
   return (
     <>
       <SidebarProvider>
         <TooltipProvider delayDuration={500} disableHoverableContent>
           <AppSidebar />
 
-          <main className="flex-1">
+          <main
+            className={cn(
+              "flex-1",
+              isLoading && "opacity-50 pointer-events-none"
+            )}
+          >
             <Outlet />
           </main>
         </TooltipProvider>

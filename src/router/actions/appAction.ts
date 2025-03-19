@@ -8,6 +8,10 @@ import { getClerkUserId } from "@/lib/utils";
 import type { ActionFunction } from "react-router";
 import type { Task } from "@/types/types";
 
+const DB_ID: string = import.meta.env.VITE_APPWRITE_DATABASE_ID;
+const TASKS_COLLECTION_ID: string = import.meta.env
+  .VITE_APPWRITE_TASKS_COLLECTION_ID;
+
 const createTask = async (data: Task) => {
   const userId = getClerkUserId();
 
@@ -18,8 +22,8 @@ const createTask = async (data: Task) => {
 
   try {
     return await databases.createDocument(
-      import.meta.env.VITE_APPWRITE_DATABASE_ID,
-      import.meta.env.VITE_APPWRITE_TASKS_COLLECTION_ID,
+      DB_ID,
+      TASKS_COLLECTION_ID,
       ID.unique(),
       { ...data, userId }
     );
@@ -29,7 +33,7 @@ const createTask = async (data: Task) => {
     console.error("Error creating task:", errMsg);
 
     return new Response(JSON.stringify({ error: errMsg }), {
-      status: 400,
+      status: 500,
       headers: { "Content-Type": "application/json" },
     });
   }
@@ -48,8 +52,8 @@ const updateTask = async (data: Task) => {
   try {
     // Provides "updatedServerTask" with its value after a successful update (see TaskCard)
     return await databases.updateDocument(
-      import.meta.env.VITE_APPWRITE_DATABASE_ID,
-      import.meta.env.VITE_APPWRITE_TASKS_COLLECTION_ID,
+      DB_ID,
+      TASKS_COLLECTION_ID,
       docId,
       data // Update payload
     );
@@ -59,7 +63,7 @@ const updateTask = async (data: Task) => {
     console.error("Error updating task:", errMsg);
 
     return new Response(JSON.stringify({ error: errMsg }), {
-      status: 400,
+      status: 500,
       headers: { "Content-Type": "application/json" },
     });
   }
@@ -73,18 +77,14 @@ const deleteTask = async (data: Task) => {
   }
 
   try {
-    await databases.deleteDocument(
-      import.meta.env.VITE_APPWRITE_DATABASE_ID,
-      import.meta.env.VITE_APPWRITE_TASKS_COLLECTION_ID,
-      docId
-    );
+    await databases.deleteDocument(DB_ID, TASKS_COLLECTION_ID, docId);
   } catch (err) {
     const errMsg =
       err instanceof Error ? err.message : "Unknown error deleting task!";
     console.error("Error deleting task:", errMsg);
 
     return new Response(JSON.stringify({ error: errMsg }), {
-      status: 400,
+      status: 500,
       headers: { "Content-Type": "application/json" },
     });
   }

@@ -11,7 +11,7 @@ function PageHeader({ children }: { children: React.ReactNode }) {
 }
 
 function PageTitle({ children }: { children: React.ReactNode }) {
-  return <h1 className="text-2xl font-semibold">{children}</h1>;
+  return <h1 className="text-2xl font-semibold capitalize">{children}</h1>;
 }
 
 function PageContent({ children }: { children: React.ReactNode }) {

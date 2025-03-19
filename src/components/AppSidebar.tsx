@@ -12,22 +12,27 @@ import {
   SidebarMenuBadge,
   SidebarMenuButton,
   SidebarMenuItem,
+  useSidebar,
 } from "./ui/sidebar";
 import Logo from "./Logo";
 import AddTaskFormDialog from "./AddTaskFormDialog";
 import { Collapsible, CollapsibleTrigger } from "./ui/collapsible";
 import { Tooltip, TooltipContent, TooltipTrigger } from "./ui/tooltip";
+import AddProjectFormDialog from "./AddProjectFormDialog";
 import { CollapsibleContent } from "@radix-ui/react-collapsible";
 import { UserButton } from "@clerk/clerk-react";
 
 // Library imports
-import { Link } from "react-router";
+import { Link, useLocation } from "react-router";
 import { ChevronRight, CirclePlus, Plus } from "lucide-react";
 
 // Constant import
-import { SIDEBAR_LINKS } from "@/constants/constants";
+import { SIDEBAR_MENU_ITEMS } from "@/constants/constants";
 
 function AppSidebar() {
+  const { isMobile, setOpenMobile } = useSidebar();
+  const location = useLocation();
+
   return (
     <Sidebar>
       <SidebarHeader>
@@ -37,7 +42,7 @@ function AppSidebar() {
       </SidebarHeader>
 
       <SidebarContent>
-        {/* Group 1: add task button & menu */}
+        {/* Group 1: add task button & nav menu */}
         <SidebarGroup>
           <SidebarGroupContent>
             <SidebarMenu>
@@ -53,21 +58,30 @@ function AppSidebar() {
                 </AddTaskFormDialog>
               </SidebarMenuItem>
 
-              {/* Sidebar links */}
-              {SIDEBAR_LINKS.map((link, index) => (
-                <SidebarMenuItem key={index}>
-                  <SidebarMenuButton asChild>
-                    <Link to={link.href}>
-                      {/* Lucide react icon */}
-                      <link.icon />
+              {/* Sidebar nav menu */}
+              <>
+                {SIDEBAR_MENU_ITEMS.map((item, index) => (
+                  <SidebarMenuItem key={index}>
+                    <SidebarMenuButton
+                      type="button"
+                      asChild
+                      onClick={() => {
+                        if (isMobile) setOpenMobile(false);
+                      }}
+                      isActive={location.pathname === item.href}
+                    >
+                      <Link to={item.href}>
+                        {/* Lucide react icon */}
+                        <item.icon />
 
-                      <span>{link.label}</span>
-                    </Link>
-                  </SidebarMenuButton>
+                        <span>{item.label}</span>
+                      </Link>
+                    </SidebarMenuButton>
 
-                  <SidebarMenuBadge>0</SidebarMenuBadge>
-                </SidebarMenuItem>
-              ))}
+                    <SidebarMenuBadge>0</SidebarMenuBadge>
+                  </SidebarMenuItem>
+                ))}
+              </>
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
@@ -86,11 +100,13 @@ function AppSidebar() {
             </SidebarGroupLabel>
 
             <Tooltip>
-              <TooltipTrigger asChild>
-                <SidebarGroupAction type="button" aria-label="Add project">
-                  <Plus />
-                </SidebarGroupAction>
-              </TooltipTrigger>
+              <AddProjectFormDialog method="POST">
+                <TooltipTrigger asChild>
+                  <SidebarGroupAction type="button" aria-label="Add project">
+                    <Plus />
+                  </SidebarGroupAction>
+                </TooltipTrigger>
+              </AddProjectFormDialog>
 
               <TooltipContent side="right">Add project</TooltipContent>
             </Tooltip>

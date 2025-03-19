@@ -1,5 +1,7 @@
 // Library imports
 import { useFetcher, useLoaderData } from "react-router";
+import { CheckCircle2 } from "lucide-react";
+import { startOfToday } from "date-fns";
 
 // Type import
 import type { Models } from "appwrite";
@@ -22,7 +24,7 @@ import AddTaskForm from "@/components/AddTaskForm";
 import TaskCard from "@/components/TaskCard";
 import TaskCardSkeleton from "@/components/TaskCardSkeleton";
 
-function InboxPage() {
+function TodayTasksPage() {
   const { tasks } = useLoaderData<{
     tasks: Models.DocumentList<Models.Document>;
   }>();
@@ -33,13 +35,25 @@ function InboxPage() {
 
   return (
     <>
-      <PageMetaTitle title="Inbox | ZenKaryaX" />
+      <PageMetaTitle title="Today's Task Overview | ZenKaryaX" />
 
-      <Topbar tabName="Inbox" />
+      <Topbar tabName="Today's Task Overview" taskCount={tasks.total} />
 
       <PageProvider>
         <PageHeader>
-          <PageTitle>Inbox</PageTitle>
+          <PageTitle>Today's task overview</PageTitle>
+
+          <>
+            {tasks.total > 0 && (
+              <div className="text-muted-foreground text-sm flex items-center gap-1.5">
+                <CheckCircle2 size={16} />
+
+                <span>
+                  {tasks.total > 1 ? `${tasks.total} tasks` : "1 task"}
+                </span>
+              </div>
+            )}
+          </>
         </PageHeader>
 
         <PageContent>
@@ -64,6 +78,11 @@ function InboxPage() {
             {shouldShowAddTaskForm ? (
               <AddTaskForm
                 mode="create"
+                defaultFormData={{
+                  content: "",
+                  due_date: startOfToday(),
+                  project: null,
+                }}
                 onCancel={() => setShouldShowAddTaskForm(false)}
                 onSubmit={(formData) => {
                   fetcher.submit(JSON.stringify(formData), {
@@ -78,7 +97,7 @@ function InboxPage() {
               <>
                 <AddTaskButton onClick={() => setShouldShowAddTaskForm(true)} />
 
-                {tasks.total === 0 && <EmptyState type="inbox" />}
+                {tasks.total === 0 && <EmptyState type="today" />}
               </>
             )}
           </>
@@ -88,4 +107,4 @@ function InboxPage() {
   );
 }
 
-export default InboxPage;
+export default TodayTasksPage;

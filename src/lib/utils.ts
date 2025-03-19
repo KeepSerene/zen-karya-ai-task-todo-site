@@ -72,11 +72,11 @@ export function getDueDateTextColor(
   if (dueDate === null || completed === undefined) return;
 
   if (isBefore(dueDate, startOfToday()) && !completed) {
-    return "text-red-500";
+    return "!text-red-500";
   } else if (isToday(dueDate)) {
-    return "text-emerald-500";
+    return "!text-emerald-500";
   } else if (isTomorrow(dueDate) && !completed) {
-    return "text-amber-500";
+    return "!text-amber-500";
   }
 }
 
