@@ -8,6 +8,7 @@ import {
   isSameYear,
   isToday,
   isTomorrow,
+  parseISO,
   startOfToday,
 } from "date-fns";
 import { redirect } from "react-router";
@@ -33,9 +34,13 @@ function toTitleCase(str: string): string {
  * @returns {string} A formatted date string or relative day label.
  */
 export function getFormattedDateLabel(date: Date | number | string): string {
+  const parsedDate = typeof date === "string" ? parseISO(date) : new Date(date);
+
   const today = new Date();
 
-  const relativeDay = toTitleCase(formatRelative(date, today).split(" at ")[0]);
+  const relativeDay = toTitleCase(
+    formatRelative(parsedDate, today).split(" at ")[0]
+  );
   const relativeDays = [
     "Yesterday",
     "Today",
@@ -51,8 +56,8 @@ export function getFormattedDateLabel(date: Date | number | string): string {
 
   if (relativeDays.includes(relativeDay)) return relativeDay;
 
-  if (isSameYear(date, today)) return format(date, "dd MMM");
-  else return format(date, "dd MMM yyyy");
+  if (isSameYear(parsedDate, today)) return format(parsedDate, "dd MMM");
+  else return format(parsedDate, "dd MMM yyyy");
 }
 
 /**
