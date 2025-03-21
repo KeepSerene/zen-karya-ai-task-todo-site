@@ -19,7 +19,7 @@ type Task = {
   content: string;
   due_date: Date | null;
   completed?: boolean;
-  project: Project | null;
+  project: Project | null; // The associated project
   userId: string;
 };
 
@@ -28,7 +28,21 @@ type TaskFormData = {
   content: string;
   due_date: Date | null;
   completed?: boolean;
-  project: string | null;
+  project: string | null; // The associated project ID
 };
 
-export type { Project, ProjectFormData, Task, TaskFormData };
+type SearchState = "idle" | "loading" | "searching";
+
+type TaskCount = {
+  inbox: number;
+  today: number;
+};
+
+export type {
+  Project,
+  ProjectFormData,
+  Task,
+  TaskFormData,
+  SearchState,
+  TaskCount,
+};

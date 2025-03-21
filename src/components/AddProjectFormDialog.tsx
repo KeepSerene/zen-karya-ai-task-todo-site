@@ -60,7 +60,7 @@ function AddProjectFormDialog({
       id,
       title: `${method === "POST" ? "Created a new" : "Updated your"} project!`,
       description: `Your project "${truncateText(formData.name, 32)}"${
-        formData.ai_generated && " along with its AI-generated tasks"
+        formData.ai_generated ? " along with its AI-generated tasks" : ""
       } has been successfully ${
         method === "POST" ? "created" : "updated"
       } and saved.`,

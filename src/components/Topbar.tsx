@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 // Component imports
 import { Tooltip, TooltipContent, TooltipTrigger } from "./ui/tooltip";
 import { SidebarTrigger } from "./ui/sidebar";
-import HotKeysGuide from "./HotkeysGuide";
+import HotKeysGuide from "./HotKeysGuide";
 
 // Util import
 import { cn } from "@/lib/utils";
@@ -57,7 +57,9 @@ function Topbar({ tabName, taskCount }: TopbarProps) {
             : "translate-y-5 opacity-0"
         )}
       >
-        <h2 className="font-semibold capitalize truncate">{tabName}</h2>
+        <h2 className="max-w-[20ch] md:max-w-[35ch] lg:max-w-[48ch] font-semibold capitalize truncate">
+          {tabName}
+        </h2>
 
         {Boolean(taskCount) && (
           <p className="text-muted-foreground text-xs">{taskCount} tasks</p>

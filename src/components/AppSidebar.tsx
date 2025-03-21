@@ -1,3 +1,7 @@
+// Type imports
+import type { Models } from "appwrite";
+import type { TaskCount } from "@/types/types";
+
 // Component imports
 import {
   Sidebar,
@@ -9,6 +13,7 @@ import {
   SidebarGroupLabel,
   SidebarHeader,
   SidebarMenu,
+  SidebarMenuAction,
   SidebarMenuBadge,
   SidebarMenuButton,
   SidebarMenuItem,
@@ -20,18 +25,35 @@ import { Collapsible, CollapsibleTrigger } from "./ui/collapsible";
 import { Tooltip, TooltipContent, TooltipTrigger } from "./ui/tooltip";
 import AddProjectFormDialog from "./AddProjectFormDialog";
 import { CollapsibleContent } from "@radix-ui/react-collapsible";
+import ProjectActionsMenu from "./ProjectActionsMenu";
 import { UserButton } from "@clerk/clerk-react";
 
 // Library imports
-import { Link, useLocation } from "react-router";
-import { ChevronRight, CirclePlus, Plus } from "lucide-react";
+import { Link, useLoaderData, useLocation } from "react-router";
+import {
+  ChevronRight,
+  CirclePlus,
+  Hash,
+  MoreHorizontal,
+  Plus,
+} from "lucide-react";
+
+// Context import
+import { useProjectsContext } from "@/contexts/ProjectsContextProvider";
 
 // Constant import
-import { SIDEBAR_MENU_ITEMS } from "@/constants/constants";
+import { SIDEBAR_NAV_ITEMS } from "@/constants/constants";
+
+type AppLoaderData = {
+  projects: Models.DocumentList<Models.Document>;
+  taskCount: TaskCount;
+};
 
 function AppSidebar() {
-  const { isMobile, setOpenMobile } = useSidebar();
+  const { taskCount } = useLoaderData<AppLoaderData>();
+  const projects = useProjectsContext();
   const location = useLocation();
+  const { isMobile, setOpenMobile } = useSidebar();
 
   return (
     <Sidebar>
@@ -60,7 +82,7 @@ function AppSidebar() {
 
               {/* Sidebar nav menu */}
               <>
-                {SIDEBAR_MENU_ITEMS.map((item, index) => (
+                {SIDEBAR_NAV_ITEMS.map((item, index) => (
                   <SidebarMenuItem key={index}>
                     <SidebarMenuButton
                       type="button"
@@ -78,7 +100,21 @@ function AppSidebar() {
                       </Link>
                     </SidebarMenuButton>
 
-                    <SidebarMenuBadge>0</SidebarMenuBadge>
+                    {/* Inbox task count badge */}
+                    <>
+                      {item.href === "/app/inbox" &&
+                        Boolean(taskCount.inbox) && (
+                          <SidebarMenuBadge>{taskCount.inbox}</SidebarMenuBadge>
+                        )}
+                    </>
+
+                    {/* Today task count badge */}
+                    <>
+                      {item.href === "/app/today" &&
+                        Boolean(taskCount.today) && (
+                          <SidebarMenuBadge>{taskCount.today}</SidebarMenuBadge>
+                        )}
+                    </>
                   </SidebarMenuItem>
                 ))}
               </>
@@ -99,6 +135,7 @@ function AppSidebar() {
               </CollapsibleTrigger>
             </SidebarGroupLabel>
 
+            {/* Add project button */}
             <Tooltip>
               <AddProjectFormDialog method="POST">
                 <TooltipTrigger asChild>
@@ -111,14 +148,88 @@ function AppSidebar() {
               <TooltipContent side="right">Add project</TooltipContent>
             </Tooltip>
 
+            {/* Projects */}
             <CollapsibleContent>
               <SidebarGroupContent>
                 <SidebarMenu>
-                  <SidebarMenuItem>
-                    <p className="text-muted-foreground text-sm p-2">
-                      Click + to add a new project
-                    </p>
-                  </SidebarMenuItem>
+                  <>
+                    {projects && projects.total > 0 ? (
+                      projects.documents
+                        .slice(0, 5)
+                        .map(({ $id, name, color_name, color_hex }) => (
+                          <SidebarMenuItem key={$id}>
+                            <SidebarMenuButton
+                              type="button"
+                              onClick={() => {
+                                if (isMobile) {
+                                  setOpenMobile(false);
+                                }
+                              }}
+                              isActive={
+                                location.pathname === `/app/projects/${$id}`
+                              }
+                              asChild
+                            >
+                              <Link to={`/app/projects/${$id}`}>
+                                <Hash color={color_hex} />
+
+                                <span className="truncate">{name}</span>
+                              </Link>
+                            </SidebarMenuButton>
+
+                            <ProjectActionsMenu
+                              defaultFormData={{
+                                id: $id,
+                                name,
+                                color_name,
+                                color_hex,
+                              }}
+                              side="right"
+                              align="start"
+                            >
+                              <SidebarMenuAction
+                                type="button"
+                                showOnHover
+                                aria-label="Click to find more options"
+                                title="More options"
+                                className="bg-sidebar-accent"
+                              >
+                                <MoreHorizontal />
+                              </SidebarMenuAction>
+                            </ProjectActionsMenu>
+                          </SidebarMenuItem>
+                        ))
+                    ) : (
+                      <SidebarMenuItem>
+                        <p className="text-muted-foreground text-sm p-2">
+                          Click + to add a new project
+                        </p>
+                      </SidebarMenuItem>
+                    )}
+                  </>
+
+                  <>
+                    {projects && projects.total > 5 && (
+                      <SidebarMenuItem>
+                        <SidebarMenuButton
+                          type="button"
+                          onClick={() => {
+                            if (isMobile) {
+                              setOpenMobile(false);
+                            }
+                          }}
+                          isActive={location.pathname === "/app/projects"}
+                          asChild
+                          className="text-muted-foreground"
+                        >
+                          <Link to="/app/projects">
+                            <MoreHorizontal />
+                            <span>View all projects</span>
+                          </Link>
+                        </SidebarMenuButton>
+                      </SidebarMenuItem>
+                    )}
+                  </>
                 </SidebarMenu>
               </SidebarGroupContent>
             </CollapsibleContent>

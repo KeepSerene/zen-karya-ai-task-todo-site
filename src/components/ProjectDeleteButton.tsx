@@ -19,8 +19,11 @@ import {
 import { Button } from "./ui/button";
 
 // Library imports
-import { useFetcher } from "react-router";
+import { useFetcher, useLocation, useNavigate } from "react-router";
 import { Trash2 } from "lucide-react";
+
+// Custom hook import
+import { useToast } from "@/hooks/use-toast";
 
 // Util import
 import { truncateText } from "@/lib/utils";
@@ -31,16 +34,49 @@ function ProjectDeleteButton({
   defaultFormData: Project;
 }) {
   const fetcher = useFetcher();
+  const location = useLocation();
+  const navigate = useNavigate();
+  const { toast } = useToast();
 
   const handleDelete = useCallback(async () => {
+    // Navigate to the inbox page when deleting a project from the project detail page
+    if (location.pathname === `/app/projects/${defaultFormData.id}`) {
+      navigate("/app/inbox");
+    }
+
+    const { id, update } = toast({
+      title: "Deleting project...",
+      duration: Infinity,
+    });
+
     try {
       fetcher.submit(defaultFormData, {
         method: "DELETE",
         encType: "application/json",
         action: "/app/projects",
       });
+
+      update({
+        id,
+        title: "Project deleted!",
+        description: `Your project "${truncateText(
+          defaultFormData.name,
+          32
+        )}" has been successfully deleted.`,
+        duration: 5000,
+      });
     } catch (err) {
-      console.error("Failed to process delete request:", err);
+      console.error("Failed to process the delete request:", err);
+
+      update({
+        id,
+        title: "Failed to delete your project!",
+        description: `An error occurred while deleting your project "${truncateText(
+          defaultFormData.name,
+          32
+        )}". Try again later.`,
+        duration: 5000,
+      });
     }
   }, [defaultFormData]);
 

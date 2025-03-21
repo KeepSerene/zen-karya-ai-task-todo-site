@@ -5,7 +5,7 @@ import type { Models } from "appwrite";
 import { Hash, MoreHorizontal } from "lucide-react";
 import { Link } from "react-router";
 
-// Component import
+// Component imports
 import ProjectActionsMenu from "./ProjectActionsMenu";
 import { Button } from "./ui/button";
 
@@ -14,7 +14,9 @@ function ProjectCard({ project }: { project: Models.Document }) {
     <li className="group/card h-14 rounded-lg px-2 flex items-center gap-3 relative transition-colors hover:bg-secondary focus-within:bg-secondary">
       <Hash size={16} color={project.color_hex} className="shrink-0" />
 
-      <p className="max-w-[48ch] text-sm truncate">{project.name}</p>
+      <p className="max-w-[20ch] md:max-w-[40ch] lg:max-w-[48ch] text-sm truncate">
+        {project.name}
+      </p>
 
       {/* More actions menu */}
       <ProjectActionsMenu

@@ -120,6 +120,36 @@ const createProject = async (data: ProjectFormData) => {
   return redirect(`/app/projects/${project?.$id}`);
 };
 
+const updateProject = async (data: Project) => {
+  const docId = data.id; // Task ID
+
+  if (!docId) {
+    throw new Error("Missing project ID");
+  }
+
+  try {
+    return await databases.updateDocument(
+      DB_ID,
+      PROJECTS_COLLECTION_ID,
+      docId,
+      {
+        name: data.name,
+        color_name: data.color_name,
+        color_hex: data.color_hex,
+      }
+    );
+  } catch (err) {
+    const errMsg =
+      err instanceof Error ? err.message : "Unknown error updating project!";
+    console.error("Error updating project:", errMsg);
+
+    return new Response(JSON.stringify({ error: errMsg }), {
+      status: 500,
+      headers: { "Content-Type": "application/json" },
+    });
+  }
+};
+
 const deleteProject = async (data: Project) => {
   const docId = data.id; // Project ID
 
@@ -147,6 +177,8 @@ const projectsAction: ActionFunction = async ({ request }) => {
 
     if (request.method === "POST") {
       return await createProject(formData);
+    } else if (request.method === "PUT") {
+      return await updateProject(formData);
     } else if (request.method === "DELETE") {
       return await deleteProject(formData);
     }

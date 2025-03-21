@@ -1,5 +1,9 @@
 function PageProvider({ children }: { children: React.ReactNode }) {
-  return <div className="wrapper md:max-w-screen-md">{children}</div>;
+  return (
+    <div className="wrapper w-full max-w-full md:max-w-screen-md">
+      {children}
+    </div>
+  );
 }
 
 function PageHeader({ children }: { children: React.ReactNode }) {
@@ -11,7 +15,9 @@ function PageHeader({ children }: { children: React.ReactNode }) {
 }
 
 function PageTitle({ children }: { children: React.ReactNode }) {
-  return <h1 className="text-2xl font-semibold capitalize">{children}</h1>;
+  return (
+    <h1 className="text-xl md:text-2xl font-semibold capitalize">{children}</h1>
+  );
 }
 
 function PageContent({ children }: { children: React.ReactNode }) {

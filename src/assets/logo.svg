@@ -1,12 +1,24 @@
-<svg width="100" height="100" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-<g clip-path="url(#clip0_26_8)">
-<rect width="100" height="100" rx="16" fill="#EA580C"/>
-<rect x="17" y="48.1427" width="20" height="48" rx="10" transform="rotate(-41.0817 17 48.1427)" fill="white"/>
-<rect x="110.313" y="-16" width="20" height="115" rx="10" transform="rotate(40.256 110.313 -16)" fill="white"/>
-</g>
-<defs>
-<clipPath id="clip0_26_8">
-<rect width="100" height="100" rx="16" fill="white"/>
-</clipPath>
-</defs>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <!-- Background rectangle with rounded corners (increased radius) -->
+  <rect x="0" y="0" width="100" height="100" rx="14" ry="14" fill="hsl(20.5deg, 90.2%, 48.2%)"/>
+  
+  <!-- Scaled up AI face/head to cover ~85% of background -->
+  <path d="M15 15 L85 15 L85 75 C85 90 15 90 15 75 Z" fill="hsl(60, 9.1%, 97.8%)" />
+  
+  <!-- Eyes as circuitry nodes (scaled up) -->
+  <circle cx="35" cy="42" r="7" fill="hsl(20.5deg, 90.2%, 48.2%)"/>
+  <circle cx="65" cy="42" r="7" fill="hsl(20.5deg, 90.2%, 48.2%)"/>
+  
+  <!-- Circuit lines connecting eyes (scaled) -->
+  <line x1="35" y1="42" x2="65" y2="42" stroke="hsl(20.5deg, 90.2%, 48.2%)" stroke-width="3"/>
+  
+  <!-- Lightning bolt representing AI processing/speed (scaled) -->
+  <path d="M50 10 L42 50 L58 50 L50 90" stroke="hsl(20.5deg, 90.2%, 48.2%)" stroke-width="5" fill="none"/>
+  
+  <!-- Zen-like curved line for mouth (scaled) -->
+  <path d="M25 65 Q50 80 75 65" stroke="hsl(20.5deg, 90.2%, 48.2%)" stroke-width="3.5" fill="none"/>
+  
+  <!-- Subtle circuit pattern on forehead (scaled) -->
+  <path d="M25 25 H40 M60 25 H75" stroke="hsl(20.5deg, 90.2%, 48.2%)" stroke-width="2" fill="none"/>
+  <path d="M32 25 V15 M68 25 V15" stroke="hsl(20.5deg, 90.2%, 48.2%)" stroke-width="2" fill="none"/>
 </svg>

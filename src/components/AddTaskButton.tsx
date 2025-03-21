@@ -1,5 +1,7 @@
-// Component imports
+// Component import
 import { Button } from "./ui/button";
+
+// Library import
 import { CirclePlus } from "lucide-react";
 
 type AddTaskButtonProps = Omit<

@@ -199,7 +199,7 @@ function TaskCard({ id, content, dueDate, completed, project }: TaskCardProps) {
 
                       <>
                         {task.project ? (
-                          <Hash size={14} />
+                          <Hash size={14} color={project?.color_hex} />
                         ) : (
                           <Inbox size={14} className="text-muted-foreground" />
                         )}

@@ -1,3 +1,4 @@
+// Library imports
 import { Calendar1, CircleCheck, CalendarDays, Inbox } from "lucide-react";
 
 export const SOCIAL_LINKS = [
@@ -19,7 +20,7 @@ export const SOCIAL_LINKS = [
   },
 ] as const;
 
-export const SIDEBAR_MENU_ITEMS = [
+export const SIDEBAR_NAV_ITEMS = [
   {
     href: "/app/inbox",
     label: "Inbox",

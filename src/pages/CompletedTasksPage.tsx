@@ -1,5 +1,6 @@
-// Library import
+// Library imports
 import { useLoaderData } from "react-router";
+import { CheckCircle2 } from "lucide-react";
 
 // Type import
 import type { Models } from "appwrite";
@@ -30,6 +31,18 @@ function CompletedTasksPage() {
       <PageProvider>
         <PageHeader>
           <PageTitle>Completed tasks</PageTitle>
+
+          <>
+            {tasks.total > 0 && (
+              <div className="text-muted-foreground text-sm flex items-center gap-1.5">
+                <CheckCircle2 size={16} />
+
+                <span>
+                  {tasks.total > 1 ? `${tasks.total} tasks` : "1 task"}
+                </span>
+              </div>
+            )}
+          </>
         </PageHeader>
 
         <PageContent>

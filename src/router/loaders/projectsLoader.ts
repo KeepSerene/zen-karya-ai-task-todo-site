@@ -7,7 +7,7 @@ import { databases, Query } from "@/lib/appwrite";
 // Type import
 import type { LoaderFunction } from "react-router";
 
-const fetchProjects = async () => {
+const fetchProjects = async (query: string) => {
   const userId = getClerkUserId();
 
   if (userId instanceof Response) {
@@ -20,6 +20,7 @@ const fetchProjects = async () => {
       import.meta.env.VITE_APPWRITE_PROJECTS_COLLECTION_ID,
       [
         Query.select(["$id", "$createdAt", "name", "color_name", "color_hex"]),
+        Query.contains("name", query), // Handle project search query
         Query.equal("userId", userId),
         Query.orderDesc("$createdAt"),
       ]
@@ -33,9 +34,13 @@ const fetchProjects = async () => {
   }
 };
 
-const projectsLoader: LoaderFunction = async () => {
+const projectsLoader: LoaderFunction = async ({ request }) => {
+  // Handle projects search
+  const url = new URL(request.url);
+  const query = url.searchParams.get("project_input") ?? ""; // See SearchProjectsField.tsx
+
   try {
-    const projects = await fetchProjects();
+    const projects = await fetchProjects(query);
 
     // If "fetchProjects" returns a Response (meaning userId was not found), return it immediately
     if (projects instanceof Response) {

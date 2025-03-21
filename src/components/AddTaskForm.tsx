@@ -1,3 +1,6 @@
+// Context import
+import { useProjectsContext } from "@/contexts/ProjectsContextProvider";
+
 // React imports
 import { useCallback, useEffect, useState } from "react";
 
@@ -22,6 +25,7 @@ import { ScrollArea } from "./ui/scroll-area";
 // Library imports
 import {
   CalendarIcon,
+  Check,
   ChevronDown,
   Hash,
   Inbox,
@@ -32,11 +36,17 @@ import {
 import * as chrono from "chrono-node";
 
 // Type imports
+import type { Models } from "appwrite";
 import type { ClassValue } from "clsx";
 import type { TaskFormData } from "@/types/types";
 
-// Util import
-import { cn, getFormattedDateLabel, getDueDateTextColor } from "@/lib/utils";
+// Util imports
+import {
+  cn,
+  getFormattedDateLabel,
+  getDueDateTextColor,
+  truncateText,
+} from "@/lib/utils";
 
 type TaskFormProps = {
   mode: "create" | "edit";
@@ -49,7 +59,7 @@ type TaskFormProps = {
 const DEFAULT_FORM_DATA: TaskFormData = {
   content: "",
   due_date: null,
-  project: null,
+  project: null, // It's the associated project ID
 };
 
 function AddTaskForm({
@@ -59,12 +69,16 @@ function AddTaskForm({
   onSubmit,
   className,
 }: TaskFormProps) {
+  const projects = useProjectsContext();
+
   const [formData, setFormData] = useState(defaultFormData);
   const [taskContent, setTaskContent] = useState(defaultFormData.content);
   const [dueDate, setDueDate] = useState(defaultFormData.due_date);
-  const [project, setProject] = useState(defaultFormData.project);
+  const [projectId, setProjectId] = useState(defaultFormData.project);
   const [projectName, setProjectName] = useState("");
-  const [projectColorHex, setProjectColorHex] = useState("");
+  const [projectColorHex, setProjectColorHex] = useState<string | undefined>(
+    undefined
+  );
   const [isCalendarOpen, setIsCalendarOpen] = useState(false);
   const [isComboBoxOpen, setIsComboBoxOpen] = useState(false);
 
@@ -74,9 +88,9 @@ function AddTaskForm({
       ...prevState,
       content: taskContent.trim(),
       due_date: dueDate,
-      project,
+      project: projectId,
     }));
-  }, [taskContent, dueDate, project]);
+  }, [taskContent, dueDate, projectId]);
 
   // Set due date from Chrono parsed task content
   useEffect(() => {
@@ -87,6 +101,18 @@ function AddTaskForm({
       setDueDate(latestDate?.date());
     }
   }, [taskContent]);
+
+  // Set project name and project-color-hex given that a project ID exists
+  useEffect(() => {
+    if (projects && projectId) {
+      const { name, color_hex } = projects.documents.find(
+        ({ $id }) => $id === projectId
+      ) as Models.Document;
+
+      setProjectName(name);
+      setProjectColorHex(color_hex);
+    }
+  }, [projects, projectId]);
 
   // Handle "add task" or "save changes"
   const handleSubmit = useCallback(() => {
@@ -115,7 +141,7 @@ function AddTaskForm({
         />
 
         <div className="max-w-max rounded-md ring-1 ring-border">
-          {/* Due date popover */}
+          {/* Due date popover (calendar) */}
           <Popover modal open={isCalendarOpen} onOpenChange={setIsCalendarOpen}>
             <PopoverTrigger asChild>
               <Button
@@ -134,8 +160,9 @@ function AddTaskForm({
             <PopoverContent className="w-auto p-0">
               <Calendar
                 mode="single"
-                disabled={{ before: new Date() }}
                 initialFocus
+                disabled={{ before: new Date() }}
+                selected={dueDate ? new Date(dueDate) : undefined}
                 onSelect={(selectedDate) => {
                   setDueDate(selectedDate || null);
                   setIsCalendarOpen(false);
@@ -144,31 +171,33 @@ function AddTaskForm({
             </PopoverContent>
           </Popover>
 
-          {dueDate && (
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => setDueDate(null)}
-                  aria-label="Remove due date"
-                  className="px-2 -ml-2"
-                >
-                  <X />
-                </Button>
-              </TooltipTrigger>
+          <>
+            {dueDate && (
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setDueDate(null)}
+                    aria-label="Remove due date"
+                    className="px-2 -ml-2"
+                  >
+                    <X />
+                  </Button>
+                </TooltipTrigger>
 
-              <TooltipContent>Remove due date</TooltipContent>
-            </Tooltip>
-          )}
+                <TooltipContent>Remove due date</TooltipContent>
+              </Tooltip>
+            )}
+          </>
         </div>
       </CardContent>
 
       <Separator />
 
       <CardFooter className="p-2 grid grid-cols-[minmax(0,1fr),max-content] gap-2">
-        {/* Task selection popover */}
+        {/* Inbox or project selection combo box (dropdown menu) */}
         <Popover modal open={isComboBoxOpen} onOpenChange={setIsComboBoxOpen}>
           <PopoverTrigger asChild>
             <Button
@@ -179,7 +208,11 @@ function AddTaskForm({
               aria-expanded={isComboBoxOpen}
               className="max-w-max"
             >
-              <Inbox /> Inbox <ChevronDown />
+              <>{projectId ? <Hash color={projectColorHex} /> : <Inbox />}</>
+
+              <span>{truncateText(projectName, 15) || "Inbox"}</span>
+
+              <ChevronDown />
             </Button>
           </PopoverTrigger>
 
@@ -189,24 +222,40 @@ function AddTaskForm({
 
               <CommandList>
                 <ScrollArea>
-                  <CommandEmpty>No tasks found!</CommandEmpty>
+                  <CommandEmpty>No projects found!</CommandEmpty>
 
                   <CommandGroup>
-                    <CommandItem>
-                      <Hash /> Task 1
-                    </CommandItem>
+                    {projects &&
+                      projects.documents.map(({ $id, name, color_hex }) => (
+                        <CommandItem
+                          key={$id}
+                          onSelect={(selectedName) => {
+                            setProjectName(
+                              selectedName === projectName ? "" : name
+                            );
+                            setProjectId(
+                              selectedName === projectName ? null : $id
+                            );
+                            setProjectColorHex(
+                              selectedName === projectName
+                                ? undefined
+                                : color_hex
+                            );
+                            setIsComboBoxOpen(false);
+                          }}
+                          className="text-sm"
+                        >
+                          <Hash color={color_hex} />
 
-                    <CommandItem>
-                      <Hash /> Task 2
-                    </CommandItem>
+                          <span>{name}</span>
 
-                    <CommandItem>
-                      <Hash /> Task 3
-                    </CommandItem>
-
-                    <CommandItem>
-                      <Hash /> Task 4
-                    </CommandItem>
+                          <>
+                            {name === projectName && (
+                              <Check className="ml-auto" />
+                            )}
+                          </>
+                        </CommandItem>
+                      ))}
                   </CommandGroup>
                 </ScrollArea>
               </CommandList>
