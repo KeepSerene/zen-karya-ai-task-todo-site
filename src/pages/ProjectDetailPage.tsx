@@ -102,7 +102,7 @@ function ProjectDetailPage() {
                 defaultFormData={{
                   content: "",
                   due_date: null,
-                  projectId: project.$id,
+                  project: project.$id,
                 }}
                 onCancel={() => setShouldShowAddTaskForm(false)}
                 onSubmit={(formData) => {
