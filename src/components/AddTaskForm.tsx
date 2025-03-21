@@ -41,12 +41,7 @@ import type { ClassValue } from "clsx";
 import type { TaskFormData } from "@/types/types";
 
 // Util imports
-import {
-  cn,
-  getFormattedDateLabel,
-  getDueDateTextColor,
-  truncateText,
-} from "@/lib/utils";
+import { cn, getFormattedDateLabel, getDueDateTextColor } from "@/lib/utils";
 
 type TaskFormProps = {
   mode: "create" | "edit";
@@ -210,7 +205,9 @@ function AddTaskForm({
             >
               <>{projectId ? <Hash color={projectColorHex} /> : <Inbox />}</>
 
-              <span>{truncateText(projectName, 15) || "Inbox"}</span>
+              <span className="max-w-[15ch] text-sm">
+                {projectName || "Inbox"}
+              </span>
 
               <ChevronDown />
             </Button>
@@ -218,7 +215,7 @@ function AddTaskForm({
 
           <PopoverContent align="start" className="w-[15rem] p-0">
             <Command>
-              <CommandInput placeholder="Search tasks..." />
+              <CommandInput placeholder="Search projects..." />
 
               <CommandList>
                 <ScrollArea>
@@ -243,11 +240,10 @@ function AddTaskForm({
                             );
                             setIsComboBoxOpen(false);
                           }}
-                          className="text-sm"
                         >
                           <Hash color={color_hex} />
 
-                          <span>{name}</span>
+                          <span className="text-sm">{name}</span>
 
                           <>
                             {name === projectName && (
