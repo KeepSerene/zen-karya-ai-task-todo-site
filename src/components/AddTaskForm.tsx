@@ -205,7 +205,7 @@ function AddTaskForm({
             >
               <>{projectId ? <Hash color={projectColorHex} /> : <Inbox />}</>
 
-              <span className="max-w-[15ch] text-sm">
+              <span className="max-w-[15ch] truncate text-sm">
                 {projectName || "Inbox"}
               </span>
 
