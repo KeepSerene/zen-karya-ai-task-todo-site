@@ -21,7 +21,6 @@ interface ProjectActionsMenuProps extends DropdownMenuContentProps {
 function ProjectActionsMenu({
   children,
   defaultFormData,
-  ...props
 }: ProjectActionsMenuProps) {
   return (
     <DropdownMenu>
